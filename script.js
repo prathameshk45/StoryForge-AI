@@ -6,17 +6,13 @@ class StoryGenerator {
         this.selectedEmotion = '';
         this.storyHistory = JSON.parse(localStorage.getItem('storyHistory') || '[]');
         
-        // New properties for visualization & audio
-        this.speechSynthesis = window.speechSynthesis;
-        this.currentUtterance = null;
-        this.isReading = false;
+        // Properties for story visualization
         this.readingProgress = 0;
         this.totalWords = 0;
         this.currentStoryText = '';
         
         this.init();
         this.initDarkMode();
-        this.initAudioFeatures();
     }
 
     init() {
@@ -69,26 +65,6 @@ class StoryGenerator {
         document.addEventListener('click', (e) => {
             if (e.target.id === 'copyBtn') this.copyStory();
             if (e.target.id === 'shareBtn') this.shareStory();
-        });
-
-        // Play story button
-        document.getElementById('playStoryBtn').addEventListener('click', () => {
-            this.playStory();
-        });
-
-        // Pause story button
-        document.getElementById('pauseStoryBtn').addEventListener('click', () => {
-            this.pauseStory();
-        });
-
-        // Speed range input
-        document.getElementById('speedRange').addEventListener('input', (e) => {
-            this.updateSpeechSpeed(e.target.value);
-        });
-
-        // Voice select
-        document.getElementById('voiceSelect').addEventListener('change', (e) => {
-            this.updateVoice(e.target.value);
         });
     }
 
@@ -466,20 +442,6 @@ class StoryGenerator {
             storyControls.style.display = 'block';
         }
         
-        // Reset audio controls to initial state
-        this.resetAudioControls();
-        
-        // Hide audio controls initially
-        const audioControls = document.getElementById('audioControls');
-        const readingProgress = document.getElementById('readingProgress');
-        
-        if (audioControls) {
-            audioControls.style.display = 'none';
-        }
-        if (readingProgress) {
-            readingProgress.style.display = 'none';
-        }
-        
         // Store the current story text for audio and cover art generation
         this.currentStoryText = this.extractPlainText(formattedStory);
         
@@ -624,236 +586,6 @@ class StoryGenerator {
         setTimeout(() => {
             document.body.removeChild(notification);
         }, 3000);
-    }
-
-    initAudioFeatures() {
-        // Initialize audio features
-        this.speechSynthesis.onvoiceschanged = () => {
-            this.populateVoiceSelect();
-        };
-        
-        // Initialize voice select if voices are already loaded
-        if (this.speechSynthesis.getVoices().length > 0) {
-            this.populateVoiceSelect();
-        }
-    }
-
-    populateVoiceSelect() {
-        const voiceSelect = document.getElementById('voiceSelect');
-        const voices = this.speechSynthesis.getVoices();
-        
-        // Clear existing options except default
-        voiceSelect.innerHTML = '<option value="0">Default Voice</option>';
-        
-        // Add available voices
-        voices.forEach((voice, index) => {
-            const option = document.createElement('option');
-            option.value = index + 1;
-            option.textContent = `${voice.name} (${voice.lang})`;
-            voiceSelect.appendChild(option);
-        });
-    }
-
-    playStory() {
-        if (!this.currentStoryText) {
-            this.showNotification('Generate a story first to listen to it!');
-            return;
-        }
-
-        if (this.isReading) {
-            this.resumeStory();
-            return;
-        }
-
-        const playBtn = document.getElementById('playStoryBtn');
-        const pauseBtn = document.getElementById('pauseStoryBtn');
-        const audioControls = document.getElementById('audioControls');
-        const readingProgress = document.getElementById('readingProgress');
-
-        // Show audio controls and reading progress
-        audioControls.style.display = 'block';
-        readingProgress.style.display = 'block';
-
-        // Create speech utterance
-        this.currentUtterance = new SpeechSynthesisUtterance(this.currentStoryText);
-        
-        // Set voice if selected
-        const voiceSelect = document.getElementById('voiceSelect');
-        const voices = this.speechSynthesis.getVoices();
-        if (voiceSelect.value > 0 && voices[voiceSelect.value - 1]) {
-            this.currentUtterance.voice = voices[voiceSelect.value - 1];
-        }
-
-        // Set speech rate
-        const speedRange = document.getElementById('speedRange');
-        this.currentUtterance.rate = parseFloat(speedRange.value);
-
-        // Set up progress tracking
-        this.setupReadingProgress();
-
-        // Event handlers
-        this.currentUtterance.onstart = () => {
-            this.isReading = true;
-            playBtn.style.display = 'none';
-            pauseBtn.style.display = 'inline-flex';
-        };
-
-        this.currentUtterance.onend = () => {
-            this.isReading = false;
-            playBtn.style.display = 'inline-flex';
-            pauseBtn.style.display = 'none';
-            this.readingProgress = 100;
-            this.updateProgressDisplay();
-        };
-
-        this.currentUtterance.onerror = (event) => {
-            console.error('Speech synthesis error:', event);
-            this.showNotification('Error playing audio. Please try again.');
-            this.resetAudioControls();
-        };
-
-        // Start speaking
-        this.speechSynthesis.speak(this.currentUtterance);
-    }
-
-    pauseStory() {
-        if (this.speechSynthesis.speaking) {
-            this.speechSynthesis.pause();
-            document.getElementById('playStoryBtn').style.display = 'inline-flex';
-            document.getElementById('pauseStoryBtn').style.display = 'none';
-        }
-    }
-
-    resumeStory() {
-        if (this.speechSynthesis.paused) {
-            this.speechSynthesis.resume();
-            document.getElementById('playStoryBtn').style.display = 'none';
-            document.getElementById('pauseStoryBtn').style.display = 'inline-flex';
-        }
-    }
-
-    updateSpeechSpeed(speed) {
-        const speedValue = document.getElementById('speedValue');
-        speedValue.textContent = `${speed}x`;
-        
-        if (this.currentUtterance) {
-            this.currentUtterance.rate = parseFloat(speed);
-        }
-    }
-
-    updateVoice(voiceIndex) {
-        const voices = this.speechSynthesis.getVoices();
-        if (this.currentUtterance && voiceIndex > 0 && voices[voiceIndex - 1]) {
-            this.currentUtterance.voice = voices[voiceIndex - 1];
-        }
-    }
-
-    setupReadingProgress() {
-        this.totalWords = this.currentStoryText.split(/\s+/).length;
-        this.readingProgress = 0;
-        
-        // Calculate estimated reading time (average 200 words per minute for speech)
-        const estimatedMinutes = Math.ceil(this.totalWords / 200);
-        document.getElementById('readingTime').textContent = `Est. reading time: ${estimatedMinutes} min`;
-        
-        // Update progress periodically
-        this.progressInterval = setInterval(() => {
-            if (this.isReading && this.speechSynthesis.speaking) {
-                // Estimate progress based on time (rough approximation)
-                this.readingProgress += 2; // Increment by 2% every interval
-                if (this.readingProgress > 100) this.readingProgress = 100;
-                this.updateProgressDisplay();
-            }
-        }, 1000);
-    }
-
-    updateProgressDisplay() {
-        const progressFill = document.getElementById('progressFill');
-        const progressStats = document.getElementById('progressStats');
-        
-        const wordsRead = Math.floor((this.readingProgress / 100) * this.totalWords);
-        
-        progressFill.style.width = `${this.readingProgress}%`;
-        progressStats.textContent = `${Math.floor(this.readingProgress)}% • ${wordsRead} words read`;
-    }
-
-    resetAudioControls() {
-        this.isReading = false;
-        document.getElementById('playStoryBtn').style.display = 'inline-flex';
-        document.getElementById('pauseStoryBtn').style.display = 'none';
-        
-        if (this.progressInterval) {
-            clearInterval(this.progressInterval);
-        }
-    }
-
-    generateCoverArt() {
-        const coverBtn = document.getElementById('generateCoverBtn');
-        const coverContainer = document.getElementById('coverArtContainer');
-        const coverLoading = document.getElementById('coverArtLoading');
-        const coverImage = document.getElementById('coverArtImage');
-        
-        if (!this.currentStoryText) {
-            this.showNotification('Generate a story first to create cover art!');
-            return;
-        }
-        
-        coverBtn.disabled = true;
-        coverContainer.style.display = 'block';
-        coverLoading.style.display = 'flex';
-        coverImage.style.display = 'none';
-        
-        // Extract key elements from story for image generation
-        const storyPrompt = this.extractImagePrompt(this.currentStoryText);
-        
-        // Use a placeholder service for demonstration (you can replace with actual AI image service)
-        this.generatePlaceholderImage(storyPrompt)
-            .then(imageUrl => {
-                coverImage.src = imageUrl;
-                coverImage.style.display = 'block';
-                coverLoading.style.display = 'none';
-                coverBtn.disabled = false;
-                this.showNotification('Cover art generated successfully!');
-            })
-            .catch(error => {
-                console.error('Cover art generation failed:', error);
-                coverLoading.style.display = 'none';
-                coverBtn.disabled = false;
-                this.showNotification('Failed to generate cover art. Try again later.');
-            });
-    }
-
-    extractImagePrompt(storyText) {
-        // Extract key visual elements from the story
-        const words = storyText.toLowerCase().split(/\s+/);
-        const visualKeywords = [];
-        
-        // Look for visual descriptors, characters, settings
-        const descriptors = ['beautiful', 'dark', 'mysterious', 'bright', 'ancient', 'modern', 'magical', 'scary'];
-        const settings = ['forest', 'city', 'castle', 'mountain', 'ocean', 'desert', 'space', 'village'];
-        const characters = ['warrior', 'princess', 'wizard', 'detective', 'child', 'dragon', 'robot'];
-        
-        words.forEach(word => {
-            if (descriptors.includes(word) || settings.includes(word) || characters.includes(word)) {
-                visualKeywords.push(word);
-            }
-        });
-        
-        return visualKeywords.length > 0 ? visualKeywords.join(' ') : 'fantasy story book cover';
-    }
-
-    generatePlaceholderImage(prompt) {
-        // For demonstration, using a placeholder image service
-        // In production, you would integrate with DALL-E, Midjourney, or similar AI image service
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                const width = 400;
-                const height = 600;
-                const encodedPrompt = encodeURIComponent(prompt);
-                const imageUrl = `https://picsum.photos/${width}/${height}?random=${Date.now()}`;
-                resolve(imageUrl);
-            }, 2000); // Simulate API delay
-        });
     }
 
     downloadStory() {
