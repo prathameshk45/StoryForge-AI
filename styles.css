@@ -847,49 +847,7 @@ body.dark-mode .story-moral p {
     animation: spin 1s linear infinite;
 }
 
-/* Audio Controls */
-.audio-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    padding: 15px;
-    background: var(--bg-secondary);
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-}
 
-.voice-selector, .speed-control {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.voice-selector label, .speed-control label {
-    font-weight: 500;
-    color: var(--text-color);
-    min-width: 50px;
-}
-
-#voiceSelect {
-    flex: 1;
-    padding: 6px 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 6px;
-    background: var(--input-bg);
-    color: var(--text-color);
-    font-size: 0.9rem;
-}
-
-#speedRange {
-    flex: 1;
-    margin: 0 10px;
-}
-
-#speedValue {
-    font-weight: 500;
-    color: var(--primary-color);
-    min-width: 40px;
-}
 
 /* Reading Progress */
 .reading-progress {
