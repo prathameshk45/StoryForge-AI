@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Story Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-top">
+                <div class="logo">
+                    <i class="fas fa-feather-alt"></i>
+                    <h1>StoryForge AI</h1>
+                </div>
+                <div class="header-controls">
+                    <button id="darkModeToggle" class="theme-toggle" title="Toggle Dark Mode">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+            <p class="tagline">Craft amazing stories with the power of AI - Now with Advanced Features!</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Story Generator Form -->
+            <div class="generator-section">
+                <div class="form-container">
+                    <h2>Create Your Story</h2>
+                    
+                    <!-- Main Character Name -->
+                    <div class="input-group">
+                        <label for="mainCharacter">Main Character Name</label>
+                        <input 
+                            type="text" 
+                            id="mainCharacter" 
+                            placeholder="Enter the main character's name (e.g., Alex, Sarah, Detective Morgan)"
+                        >
+                    </div>
+
+                    <!-- Prompt Input -->
+                    <div class="input-group">
+                        <label for="prompt">Story Prompt</label>
+                        <textarea 
+                            id="prompt" 
+                            
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <!-- Emotion-Based Plot -->
+                    <div class="input-group">
+                        <label>Emotion-Based Plot</label>
+                        <div class="emotion-buttons">
+                            <button type="button" class="emotion-btn" data-emotion="hope">
+                                <i class="fas fa-sun"></i>
+                                Hope
+                            </button>
+                            <button type="button" class="emotion-btn" data-emotion="fear">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Fear
+                            </button>
+                            <button type="button" class="emotion-btn" data-emotion="love">
+                                <i class="fas fa-heart"></i>
+                                Love
+                            </button>
+                            <button type="button" class="emotion-btn" data-emotion="betrayal">
+                                <i class="fas fa-user-slash"></i>
+                                Betrayal
+                            </button>
+                            <button type="button" class="emotion-btn" data-emotion="discovery">
+                                <i class="fas fa-search"></i>
+                                Discovery
+                            </button>
+                            <button type="button" class="emotion-btn" data-emotion="revenge">
+                                <i class="fas fa-fire"></i>
+                                Revenge
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Story Mode Selection -->
+                    <div class="input-group">
+                        <label for="storyMode">Story Mode</label>
+                        <select id="storyMode">
+                            <option value="classic">Classic Story</option>
+                            <option value="thriller">Thriller Mode</option>
+                            <option value="rpg">RPG Adventure</option>
+                            <option value="mystery">Mystery Solver</option>
+                            <option value="roleswap">Role-Swap Story</option>
+                            <option value="interactive">Interactive World</option>
+                        </select>
+                    </div>
+
+                    <!-- Genre Selection -->
+                    <div class="input-group">
+                        <label for="genre">Genre</label>
+                        <select id="genre">
+                            <option value="">Select a genre (optional)</option>
+                            <option value="fantasy">Fantasy</option>
+                            <option value="science-fiction">Science Fiction</option>
+                            <option value="mystery">Mystery</option>
+                            <option value="romance">Romance</option>
+                            <option value="horror">Horror</option>
+                            <option value="adventure">Adventure</option>
+                            <option value="thriller">Thriller</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="drama">Drama</option>
+                            <option value="historical">Historical Fiction</option>
+                        </select>
+                    </div>
+
+                    <!-- Tone Selection -->
+                    <div class="input-group">
+                        <label>Tone & Style</label>
+                        <div class="tone-buttons">
+                            <button type="button" class="tone-btn" data-tone="funny">
+                                <i class="fas fa-laugh"></i>
+                                Funny
+                            </button>
+                            <button type="button" class="tone-btn" data-tone="romantic">
+                                <i class="fas fa-heart"></i>
+                                Romantic
+                            </button>
+                            <button type="button" class="tone-btn" data-tone="horror">
+                                <i class="fas fa-ghost"></i>
+                                Horror
+                            </button>
+                            <button type="button" class="tone-btn" data-tone="dramatic">
+                                <i class="fas fa-theater-masks"></i>
+                                Dramatic
+                            </button>
+                            <button type="button" class="tone-btn" data-tone="mysterious">
+                                <i class="fas fa-search"></i>
+                                Mysterious
+                            </button>
+                            <button type="button" class="tone-btn" data-tone="adventurous">
+                                <i class="fas fa-compass"></i>
+                                Adventurous
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Story Length -->
+                    <div class="input-group">
+                        <label for="length">Story Length</label>
+                        <select id="length">
+                            <option value="short">Short (100-200 words)</option>
+                            <option value="medium" selected>Medium (300-500 words)</option>
+                            <option value="long">Long (600-800 words)</option>
+                        </select>
+                    </div>
+
+                    <!-- Generate Button -->
+                    <button id="generateBtn" class="generate-btn">
+                        <i class="fas fa-magic"></i>
+                        Generate Story
+                    </button>
+                </div>
+            </div>
+
+            <!-- Story Display -->
+            <div class="story-section">
+                <div class="story-container" id="storyContainer">
+                    <div class="story-placeholder">
+                        <i class="fas fa-book-open"></i>
+                        <h3>Your AI-generated story will appear here</h3>
+                        <p>Fill out the form and click "Generate Story" to create your unique tale!</p>
+                    </div>
+                </div>
+                
+                <!-- Story Controls (hidden by default) -->
+                <div class="story-controls" id="storyControls" style="display: none;">
+                    <div class="controls-row">
+                        <!-- Voice/Audio Controls -->
+                        <div class="control-group">
+                            <button id="playStoryBtn" class="control-btn">
+                                <i class="fas fa-play"></i>
+                                Listen to Story
+                            </button>
+                            <button id="pauseStoryBtn" class="control-btn" style="display: none;">
+                                <i class="fas fa-pause"></i>
+                                Pause
+                            </button>
+                            <div class="audio-controls" id="audioControls" style="display: none;">
+                                <div class="voice-selector">
+                                    <label for="voiceSelect">Voice:</label>
+                                    <select id="voiceSelect">
+                                        <option value="0">Default Voice</option>
+                                    </select>
+                                </div>
+                                <div class="speed-control">
+                                    <label for="speedRange">Speed:</label>
+                                    <input type="range" id="speedRange" min="0.5" max="2" step="0.1" value="1">
+                                    <span id="speedValue">1.0x</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Reading Progress -->
+                        <div class="control-group">
+                            <div class="reading-progress" id="readingProgress" style="display: none;">
+                                <div class="progress-info">
+                                    <span class="progress-text">Reading Progress</span>
+                                    <span class="progress-stats" id="progressStats">0% • 0 words read</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="progressFill"></div>
+                                </div>
+                                <div class="reading-time">
+                                    <span id="readingTime">Est. reading time: 0 min</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Main Action Controls -->
+                        <div class="control-group">
+                            <button id="copyBtn" class="control-btn">
+                                <i class="fas fa-copy"></i>
+                                Copy Story
+                            </button>
+                            <button id="shareBtn" class="control-btn">
+                                <i class="fas fa-share"></i>
+                                Share
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <p>Crafting your story...</p>
+            </div>
+        </div>
+
+        <!-- API Key Modal -->
+        <div class="modal" id="apiKeyModal">
+            <div class="modal-content">
+                <h3>Google AI API Key Required</h3>
+                <p>To generate stories, you need to provide your Google Generative AI API key.</p>
+                <div class="input-group">
+                    <label for="apiKey">API Key</label>
+                    <input type="password" id="apiKey" placeholder="Enter your Google AI API key">
+                    <small>Get your free API key from <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a></small>
+                </div>
+                <div class="modal-buttons">
+                    <button id="saveApiKey" class="btn-primary">Save Key</button>
+                    <button id="cancelApiKey" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
